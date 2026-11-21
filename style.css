@@ -227,6 +227,35 @@ h3 { font-size: 1.35rem; }
 @keyframes pop { from { opacity: 0; transform: translateY(8px); } }
 .fine { font-size: .78rem; color: var(--light-muted); margin: 4px 0 0; }
 
+/* ---------- practical info ---------- */
+.tbc { background: color-mix(in srgb, var(--gold) 22%, transparent); color: inherit; border: 1px dashed color-mix(in srgb, var(--gold) 80%, #000); border-radius: 6px; padding: .05em .4em; box-decoration-break: clone; -webkit-box-decoration-break: clone; font-style: italic; }
+.night .tbc { background: rgba(242, 184, 91, .14); border-color: rgba(242, 184, 91, .6); color: #f6dcae; }
+.tbc-note { display: block; margin-top: 10px; font-size: .92rem; color: var(--muted); }
+.info-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 40px; }
+.info { position: relative; padding: 26px 24px; border-radius: 24px; background: #fff; box-shadow: 0 20px 40px -30px rgba(23, 37, 31, .4); overflow: hidden; }
+.info::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 4px; background: var(--c); }
+.info-ic { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 14px; font-size: 1.2rem; color: var(--night); background: color-mix(in srgb, var(--c) 35%, #fff); margin-bottom: 14px; }
+.info h3 { margin-bottom: 12px; }
+.info dl { margin: 0; display: grid; gap: 10px; }
+.info dt { font-size: .72rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--moss); }
+.info dd { margin: 2px 0 0; font-size: .95rem; }
+.info a { font-weight: 600; }
+
+/* ---------- faq ---------- */
+.faq-wrap { display: grid; grid-template-columns: 1fr 1.6fr; gap: clamp(40px, 6vw, 80px); align-items: start; }
+.faq-head { position: sticky; top: 110px; }
+.faq { display: grid; gap: 12px; }
+.faq details { border-radius: 20px; background: rgba(255, 255, 255, .05); border: 1px solid rgba(255, 255, 255, .1); backdrop-filter: blur(12px); transition: background .3s, border-color .3s; }
+.faq details[open] { background: rgba(255, 255, 255, .08); border-color: rgba(242, 184, 91, .4); }
+.faq summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 20px 24px; font-family: var(--serif); font-size: 1.2rem; color: #fff; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: "+"; flex: none; width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; font-family: var(--sans); font-size: 1.3rem; color: var(--night); background: var(--gold); transition: transform .35s var(--ease); }
+.faq details[open] summary::after { transform: rotate(45deg); }
+.faq summary:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; border-radius: 20px; }
+.faq .ans { padding: 0 24px 20px; color: #c9d6cf; animation: pop .4s var(--ease); }
+.faq .ans p { margin: 0 0 10px; }
+.faq .ans a { color: var(--gold); }
+
 /* ---------- visit ---------- */
 .contact { list-style: none; padding: 0; margin: 30px 0 0; display: grid; gap: 16px; }
 .contact li { display: flex; gap: 16px; align-items: center; }
@@ -258,6 +287,7 @@ h3 { font-size: 1.35rem; }
 @media (max-width: 1100px) {
   .capacities { grid-template-columns: repeat(3, 1fr); }
   .teachers { grid-template-columns: repeat(3, 1fr); }
+  .info-grid { grid-template-columns: repeat(2, 1fr); }
   .bento { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 860px) {
@@ -271,11 +301,13 @@ h3 { font-size: 1.35rem; }
   .rings::before { left: 39px; right: auto; top: 30px; bottom: 30px; width: 2px; height: auto; background: linear-gradient(180deg, var(--gold), var(--sky), var(--sage)); }
   .stats { grid-template-columns: repeat(2, 1fr); }
   .finder { position: static; }
+  .faq-wrap { grid-template-columns: 1fr; }
+  .faq-head { position: static; }
   .scroll-cue { display: none; }
 }
 @media (max-width: 600px) {
   body { font-size: 16px; }
-  .capacities, .teachers { grid-template-columns: 1fr; }
+  .capacities, .teachers, .info-grid { grid-template-columns: 1fr; }
   .bento { grid-template-columns: 1fr; }
   .tile.t-wide { grid-column: auto; }
   .tile { min-height: 230px; }

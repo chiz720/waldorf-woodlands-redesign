@@ -17,9 +17,15 @@ An independent concept redesign of the website for [Waldorf Woodlands School](ht
 - **School Life:** activity tiles that can show photos, slideshows, videos, audio or YouTube (see below)
 - **Teachers:** the five teachers named on the current site
 - **Admissions:** a **class finder** that uses the school's 1 Sept – 31 Aug birth-date cut-offs to show which class a child would join, plus a link to the fee structure
+- **Practical information:** school day, ages and class sizes, fees, meals, transport, after school, term dates, safety and registration
+- **FAQ:** eight common parent questions (after Class 7, national curriculum, reading, assessment, screens, joining, visiting, getting involved)
 - **Visit:** contact details, a map, an email link for booking a visit, and the donation link
 
 The visuals are illustrated on purpose. No photos of the children were copied from the school's site. If the school adopts the design, swap in its own photos and remove the concept bar and the `noindex` tag.
+
+## Placeholders for the school to fill in
+
+The Practical information and FAQ sections mark anything the public site doesn't state as **To confirm**. In `index.html` these are `<mark class="tbc">…</mark>`, so search the file for `class="tbc"` to find every one, and replace the whole `<mark>` with the real answer. FAQ text that describes general Waldorf practice is worded as such ("In Waldorf schools…"). The school should check it matches what it actually does.
 
 ## Adding photos, video, audio and YouTube to "Days full of doing"
 
