@@ -42,6 +42,8 @@ The tiles are listed in `media/life.js`, and the instructions are at the top of 
 - Keep each file under **25 MB**, which is GitHub's limit for uploads on the website. Put longer videos on YouTube.
 - Only upload photos and recordings of children with their parents' consent.
 
+**Sample photos:** the tiles currently use public-domain (CC0) placeholder photos in `media/photos/`, each marked with a "Sample photo" tag. Sources are listed in `media/photos/CREDITS.md`. To replace one, upload the school's photo, change the `src`, and delete `sample: true`.
+
 ## Tech
 
 Plain HTML, CSS and JavaScript with no build step. Deploy by pushing to GitHub with Pages turned on.

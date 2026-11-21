@@ -33,6 +33,7 @@ const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
       const srcs = [].concat(m.src).filter(Boolean);
       bg = `<div class="tile-media slides">${srcs.map((s, j) => `<img src="${esc(s)}" alt="${esc(m.alt || t.title)}" loading="lazy"${j ? '' : ' class="on"'}>`).join('')}</div>`;
       if (srcs.length > 1) badge = `⧉ ${srcs.length} photos`;
+      if (m.sample) extra = '<span class="sample-tag">Sample photo</span>';
       label = `View ${srcs.length > 1 ? 'photos' : 'photo'}: ${t.title}`;
     } else if (m?.type === 'video') {
       bg = `<div class="tile-media"><video src="${esc(m.src)}"${m.poster ? ` poster="${esc(m.poster)}"` : ''} muted loop playsinline preload="metadata"></video></div>${PLAY}`;
@@ -67,7 +68,7 @@ const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
       if (badge && left.length < 2) badge.remove();
       return;
     }
-    $('.tile-media', tile)?.remove(); $('.play', tile)?.remove(); $('.badge', tile)?.remove(); $('.tile-hit', tile)?.remove();
+    $('.tile-media', tile)?.remove(); $('.play', tile)?.remove(); $('.badge', tile)?.remove(); $('.sample-tag', tile)?.remove(); $('.tile-hit', tile)?.remove();
     tile.classList.remove('has-media');
     tile.insertAdjacentHTML('afterbegin', ART[t.art] || '');
   }, true);
