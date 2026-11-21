@@ -118,22 +118,26 @@ if ('IntersectionObserver' in window && !reduceMotion) {
 })();
 
 /* ---------- admissions class finder ----------
- * The school's published cut-offs: a class cohort is born 1 Sept – 31 Aug,
- * and children born 1 Sept 2019 – 31 Aug 2020 start Class 1 in the 2026 intake
- * (school year beginning Sept 2025). Kindergarten runs from 18 months to 6 years.
+ * Mirrors the school's published table exactly: a class cohort is born
+ * 1 Sept – 31 Aug, and children born 1 Sept 2019 – 31 Aug 2020 are Class 1
+ * in the 2026 intake. So the class in intake year I is I − 6 − cohortStart.
+ * Kindergarten runs from 18 months to 6 years.
  */
 (() => {
   const form = $('#finder');
   const out = $('#result');
   const input = $('#dob');
   const today = new Date();
-  input.max = today.toISOString().slice(0, 10);
+  const pad = n => String(n).padStart(2, '0');
+  // Local date, not UTC, so the limit is right in Nairobi time.
+  input.max = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
 
   // Calendar year in which the child's 1 Sept – 31 Aug birth cohort starts.
   const cohortStart = d => (d.getMonth() >= 8 ? d.getFullYear() : d.getFullYear() - 1);
-  // School year currently running (or about to), as the year its September falls in.
-  const currentYear = today.getMonth() >= 8 ? today.getFullYear() : today.getFullYear() - 1;
+  // From mid-year on, families are applying for next year's intake.
+  const nextIntake = today.getMonth() >= 6 ? today.getFullYear() + 1 : today.getFullYear();
   const fmt = d => d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+  const placement = n => (n > 7 ? 'Beyond Class 7' : n >= 1 ? `Class ${n}` : 'Kindergarten');
 
   form.addEventListener('submit', e => {
     e.preventDefault();
@@ -143,21 +147,27 @@ if ('IntersectionObserver' in window && !reduceMotion) {
     if (dob > today) { out.innerHTML = '<p class="pop">That date is in the future. Please check the birthday.</p>'; return; }
 
     const S = cohortStart(dob);
-    const cls = currentYear - 5 - S;               // class for this school year
-    const intakeYear = S + 7;                      // the school's "Class 1 intake" label
-    const kgFrom = new Date(dob); kgFrom.setMonth(kgFrom.getMonth() + 18);
-    const yr = `${currentYear}–${String(currentYear + 1).slice(2)}`;
+    const classIn = intake => intake - 6 - S;
+    const cls = classIn(nextIntake);
+    const class1Intake = S + 7;
+    // 18 months on, clamped so 31 Aug doesn't roll over into March.
+    const kgFrom = new Date(y, m - 1 + 18, 1);
+    kgFrom.setDate(Math.min(d, new Date(kgFrom.getFullYear(), kgFrom.getMonth() + 1, 0).getDate()));
     let html;
 
-    if (cls >= 1 && cls <= 7) {
-      html = `<p class="big">Class ${cls}</p><p>for the ${yr} school year.</p>`;
-      if (cls < 7) html += `<p class="muted-light">Moving up to Class ${cls + 1} in ${currentYear + 1}–${String(currentYear + 2).slice(2)}.</p>`;
-    } else if (cls > 7) {
+    if (cls > 7) {
       html = `<p class="big">Beyond Class 7</p><p>Our primary school runs to Class 7. Do get in touch and we’ll gladly talk through options.</p>`;
+    } else if (cls >= 1) {
+      html = `<p class="big">Class ${cls}</p><p>in the <strong>${nextIntake} intake</strong>.</p>`;
     } else if (kgFrom <= today) {
-      html = `<p class="big">Kindergarten</p><p>Playgroup &amp; Kinder (18 months – 6 years).</p><p class="muted-light">Class 1 intake: <strong>${intakeYear}</strong>.</p>`;
+      html = `<p class="big">Kindergarten</p><p>Playgroup &amp; Kinder (18 months – 6 years).</p><p>Class 1 in the <strong>${class1Intake} intake</strong>.</p>`;
     } else {
-      html = `<p class="big">Kindergarten from ${fmt(kgFrom)}</p><p>That’s when your little one turns 18 months.</p><p class="muted-light">Class 1 intake: <strong>${intakeYear}</strong>.</p>`;
+      html = `<p class="big">Kindergarten from ${fmt(kgFrom)}</p><p>That’s when your little one turns 18 months.</p><p>Class 1 in the <strong>${class1Intake} intake</strong>.</p>`;
+    }
+    if (classIn(nextIntake - 1) <= 7) {
+      const rows = [nextIntake - 1, nextIntake, nextIntake + 1, nextIntake + 2]
+        .map(i => `<li${i === nextIntake ? ' class="now"' : ''}><span>${i} intake</span><b>${placement(classIn(i))}</b></li>`).join('');
+      html += `<ul class="intakes">${rows}</ul>`;
     }
     out.innerHTML = `<div class="pop">${html}</div>`;
   });
