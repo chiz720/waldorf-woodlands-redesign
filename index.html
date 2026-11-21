@@ -164,32 +164,7 @@
     <div class="wrap">
       <p class="eyebrow dark reveal">School life</p>
       <h2 class="reveal">Days full of <em>doing</em>.</h2>
-      <div class="bento">
-        <article class="tile t-wide reveal" style="--a:#12302a;--b:#2f5d4f">
-          <svg class="art" viewBox="0 0 200 120" aria-hidden="true"><circle cx="40" cy="40" r="22" fill="#f2b85b" opacity=".9"/><path d="M0 120V90c30-20 60-25 90-10s70 10 110-15v55z" fill="#9cc5a1" opacity=".55"/><path d="M0 120v-15c40-15 80-10 120 0s60 5 80-5v20z" fill="#9cc5a1"/><g fill="#0b1a16" opacity=".6"><path d="M150 95V60"/><circle cx="150" cy="55" r="16"/><circle cx="170" cy="70" r="12"/></g></svg>
-          <h3>An acre of trees</h3><p>Our Karen campus is a living playground for the imagination: climbing, building, exploring and resting under the canopy.</p>
-        </article>
-        <article class="tile reveal" style="--a:#e98a7a;--b:#f2b85b">
-          <svg class="art" viewBox="0 0 120 120" aria-hidden="true"><circle cx="45" cy="55" r="30" fill="#fff" opacity=".35"/><circle cx="75" cy="65" r="28" fill="#7cc6d6" opacity=".5"/><circle cx="60" cy="40" r="22" fill="#fff6" /></svg>
-          <h3>Watercolour &amp; art</h3><p>Wet-on-wet painting, drawing and colour as a language of feeling.</p>
-        </article>
-        <article class="tile reveal" style="--a:#7cc6d6;--b:#a08be0">
-          <svg class="art" viewBox="0 0 120 120" aria-hidden="true"><path d="M30 90V40l50-10v50" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="24" cy="90" r="10" fill="#fff"/><circle cx="74" cy="80" r="10" fill="#fff"/></svg>
-          <h3>Music everywhere</h3><p>Songs from Kindergarten, recorder and flute, then piano, ukulele and guitar.</p>
-        </article>
-        <article class="tile reveal" style="--a:#b5835a;--b:#f2b85b">
-          <svg class="art" viewBox="0 0 120 120" aria-hidden="true"><rect x="20" y="70" width="80" height="14" rx="4" fill="#fff" opacity=".7"/><path d="M40 70l10-35h20l10 35" fill="#fff" opacity=".4"/></svg>
-          <h3>Woodwork &amp; clay</h3><p>Real tools, real materials, real pride in something made by hand.</p>
-        </article>
-        <article class="tile reveal" style="--a:#2f5d4f;--b:#9cc5a1">
-          <svg class="art" viewBox="0 0 120 120" aria-hidden="true"><path d="M20 80c20-30 60-30 80 0" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="60" cy="40" r="12" fill="#fff" opacity=".8"/></svg>
-          <h3>Swimming, sports &amp; games</h3><p>Athletics, football, cricket, rounders and classic Waldorf games for health and joy.</p>
-        </article>
-        <article class="tile t-wide reveal" style="--a:#a08be0;--b:#e98a7a">
-          <svg class="art" viewBox="0 0 200 120" aria-hidden="true"><path d="M20 100c30-60 60-80 90-80s50 30 70 80" stroke="#fff" stroke-width="4" fill="none" stroke-dasharray="2 10" stroke-linecap="round"/><circle cx="110" cy="20" r="8" fill="#fff"/></svg>
-          <h3>Stories, drama &amp; poetry</h3><p>Fairy tales, fables and legends told by heart, then lived through plays, poems and movement. Every child learns to speak, listen and belong.</p>
-        </article>
-      </div>
+      <div class="bento" id="bento"></div>
     </div>
   </section>
 
@@ -282,6 +257,13 @@
   </div>
 </footer>
 
+<dialog class="lightbox" id="lightbox" aria-label="Media viewer">
+  <button class="lb-close" id="lbClose" aria-label="Close">×</button>
+  <div class="lb-body" id="lbBody"></div>
+  <p class="lb-cap" id="lbCap"></p>
+</dialog>
+
+<script src="media/life.js"></script>
 <script src="main.js"></script>
 </body>
 </html>

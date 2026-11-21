@@ -4,6 +4,131 @@ const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+/* ---------- school life tiles & media (data in media/life.js) ---------- */
+(() => {
+  const grid = $('#bento');
+  if (!grid) return;
+  const tiles = Array.isArray(window.LIFE_TILES) ? window.LIFE_TILES : [];
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const ytId = url => {
+    const s = String(url || '').trim();
+    const m = s.match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/|\/live\/)([\w-]{11})/);
+    return m ? m[1] : /^[\w-]{11}$/.test(s) ? s : null;
+  };
+  const ART = {
+    trees: '<svg class="art" viewBox="0 0 200 120" aria-hidden="true"><circle cx="40" cy="40" r="22" fill="#f2b85b" opacity=".9"/><path d="M0 120V90c30-20 60-25 90-10s70 10 110-15v55z" fill="#9cc5a1" opacity=".55"/><path d="M0 120v-15c40-15 80-10 120 0s60 5 80-5v20z" fill="#9cc5a1"/><g fill="#0b1a16" opacity=".6"><circle cx="150" cy="55" r="16"/><circle cx="170" cy="70" r="12"/></g></svg>',
+    paint: '<svg class="art" viewBox="0 0 120 120" aria-hidden="true"><circle cx="45" cy="55" r="30" fill="#fff" opacity=".35"/><circle cx="75" cy="65" r="28" fill="#7cc6d6" opacity=".5"/><circle cx="60" cy="40" r="22" fill="#fff6"/></svg>',
+    music: '<svg class="art" viewBox="0 0 120 120" aria-hidden="true"><path d="M30 90V40l50-10v50" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="24" cy="90" r="10" fill="#fff"/><circle cx="74" cy="80" r="10" fill="#fff"/></svg>',
+    wood: '<svg class="art" viewBox="0 0 120 120" aria-hidden="true"><rect x="20" y="70" width="80" height="14" rx="4" fill="#fff" opacity=".7"/><path d="M40 70l10-35h20l10 35" fill="#fff" opacity=".4"/></svg>',
+    sport: '<svg class="art" viewBox="0 0 120 120" aria-hidden="true"><path d="M20 80c20-30 60-30 80 0" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="60" cy="40" r="12" fill="#fff" opacity=".8"/></svg>',
+    story: '<svg class="art" viewBox="0 0 200 120" aria-hidden="true"><path d="M20 100c30-60 60-80 90-80s50 30 70 80" stroke="#fff" stroke-width="4" fill="none" stroke-dasharray="2 10" stroke-linecap="round"/><circle cx="110" cy="20" r="8" fill="#fff"/></svg>',
+  };
+  const PLAY = '<span class="play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></span>';
+
+  grid.innerHTML = tiles.map((t, i) => {
+    const m = t.media;
+    const [a, b] = (t.colors || ['#2f5d4f', '#9cc5a1']).map(esc);
+    let bg = '', badge = '', extra = '', label = '';
+    if (m?.type === 'image') {
+      const srcs = [].concat(m.src).filter(Boolean);
+      bg = `<div class="tile-media slides">${srcs.map((s, j) => `<img src="${esc(s)}" alt="${esc(m.alt || t.title)}" loading="lazy"${j ? '' : ' class="on"'}>`).join('')}</div>`;
+      if (srcs.length > 1) badge = `⧉ ${srcs.length} photos`;
+      label = `View ${srcs.length > 1 ? 'photos' : 'photo'}: ${t.title}`;
+    } else if (m?.type === 'video') {
+      bg = `<div class="tile-media"><video src="${esc(m.src)}"${m.poster ? ` poster="${esc(m.poster)}"` : ''} muted loop playsinline preload="metadata"></video></div>${PLAY}`;
+      badge = '▶ Video'; label = `Play video: ${t.title}`;
+    } else if (m?.type === 'youtube' && ytId(m.src)) {
+      bg = `<div class="tile-media"><img src="https://i.ytimg.com/vi/${ytId(m.src)}/hqdefault.jpg" alt="" loading="lazy"></div>${PLAY}`;
+      badge = '▶ Watch'; label = `Watch on YouTube: ${t.title}`;
+    } else if (m?.type === 'audio') {
+      extra = `<audio src="${esc(m.src)}" preload="none"></audio><div class="audio-bar"><i></i></div>`;
+      badge = '♪ Listen'; label = `Play audio: ${t.title}`;
+    }
+    return `<article class="tile${t.wide ? ' t-wide' : ''}${bg ? ' has-media' : ''} reveal" style="--a:${a};--b:${b}" data-i="${i}">
+      ${bg}${bg ? '' : ART[t.art] || ''}
+      ${badge ? `<span class="badge">${badge}</span>` : ''}
+      <h3>${esc(t.title)}</h3><p>${esc(t.text)}</p>${extra}
+      ${label ? `<button class="tile-hit" aria-label="${esc(label)}"></button>` : ''}
+    </article>`;
+  }).join('');
+
+  // A missing or broken file falls back to the tile's illustration.
+  grid.addEventListener('error', e => {
+    const tile = e.target.closest?.('.tile');
+    if (!tile || !e.target.matches('img, video')) return;
+    const t = tiles[tile.dataset.i];
+    console.warn('[School life] could not load', e.target.currentSrc || e.target.src);
+    if (e.target.matches('.slides img') && $$('.slides img', tile).length > 1) {
+      e.target.remove();
+      const left = $$('.slides img', tile);
+      if (!left.some(im => im.classList.contains('on'))) left[0].classList.add('on');
+      const badge = $('.badge', tile);
+      if (badge) badge.textContent = left.length > 1 ? `⧉ ${left.length} photos` : '';
+      if (badge && left.length < 2) badge.remove();
+      return;
+    }
+    $('.tile-media', tile)?.remove(); $('.play', tile)?.remove(); $('.badge', tile)?.remove(); $('.tile-hit', tile)?.remove();
+    tile.classList.remove('has-media');
+    tile.insertAdjacentHTML('afterbegin', ART[t.art] || '');
+  }, true);
+
+  // Slideshows crossfade; background videos play only while on screen.
+  if (!reduceMotion) {
+    setInterval(() => $$('.slides', grid).forEach(s => {
+      const imgs = $$('img', s);
+      if (imgs.length < 2) return;
+      const i = imgs.findIndex(im => im.classList.contains('on'));
+      imgs[i]?.classList.remove('on');
+      imgs[(i + 1) % imgs.length].classList.add('on');
+    }), 4000);
+    const vio = new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting) e.target.play().catch(() => {}); else e.target.pause();
+    }), { threshold: 0.3 });
+    $$('.tile-media video', grid).forEach(v => vio.observe(v));
+  }
+
+  // Lightbox for photos, videos and YouTube.
+  const lb = $('#lightbox'), body = $('#lbBody'), cap = $('#lbCap');
+  const open = (html, caption, wide) => {
+    body.innerHTML = html;
+    body.classList.toggle('frame', !!wide);
+    cap.textContent = caption;
+    lb.showModal();
+  };
+  // The close event fires a moment later; don't wipe media that was opened since.
+  lb.addEventListener('close', () => { if (!lb.open) body.innerHTML = ''; });
+  lb.addEventListener('click', e => { if (e.target === lb) lb.close(); });
+  $('#lbClose').addEventListener('click', () => lb.close());
+
+  grid.addEventListener('click', e => {
+    if (!e.target.closest('.tile-hit')) return;
+    const tile = e.target.closest('.tile');
+    const t = tiles[tile.dataset.i], m = t.media;
+    if (m.type === 'image') {
+      // Use what actually loaded on the tile, so missing photos are skipped.
+      const srcs = $$('.slides img', tile).map(im => im.getAttribute('src'));
+      open(`<div class="strip">${srcs.map(s => `<img src="${esc(s)}" alt="${esc(m.alt || t.title)}">`).join('')}</div>`,
+        t.title + (srcs.length > 1 ? ` · ${srcs.length} photos, swipe to see more` : ''));
+    } else if (m.type === 'video') {
+      open(`<video src="${esc(m.src)}"${m.poster ? ` poster="${esc(m.poster)}"` : ''} controls autoplay playsinline></video>`, t.title, true);
+    } else if (m.type === 'youtube') {
+      open(`<iframe src="https://www.youtube-nocookie.com/embed/${ytId(m.src)}?autoplay=1&rel=0" title="${esc(t.title)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`, t.title, true);
+    } else if (m.type === 'audio') {
+      const audio = $('audio', tile), badge = $('.badge', tile);
+      $$('audio', grid).forEach(a => { if (a !== audio) a.pause(); });
+      if (audio.paused) audio.play().catch(err => console.warn('[School life] audio', err)); else audio.pause();
+      if (!audio.dataset.wired) {
+        audio.dataset.wired = 1;
+        const bar = $('.audio-bar i', tile);
+        audio.addEventListener('timeupdate', () => { bar.style.width = (audio.currentTime / audio.duration) * 100 + '%'; });
+        audio.addEventListener('play', () => { badge.textContent = '❚❚ Pause'; tile.classList.add('playing'); });
+        audio.addEventListener('pause', () => { badge.textContent = '♪ Listen'; tile.classList.remove('playing'); });
+        audio.addEventListener('ended', () => { bar.style.width = '0'; });
+      }
+    }
+  });
+})();
+
 /* ---------- nav: solid on scroll, mobile menu ---------- */
 const nav = $('#nav');
 const burger = $('#burger');
